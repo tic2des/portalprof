@@ -1,16 +1,28 @@
 <nav>
     <ul>
         <li>
-            <a href="/" >Apresentação Plus</a>
-        </li>
-        <li>
-            <a href="/moodleqparser">Form QParser</a>
-        </li>
-        <li>
             <a href="/tic2des">TIC2DES</a>
         </li>
+        {{#if user }}
         <li>
-            <a href="/auth/google">{{username }}</a>
+            <a href="/apresentacaoplus" >Apresentação Plus</a>
         </li>
+        <li>
+            <a href="/formqparser">Form QParser</a>
+        </li>
+        
+        <li id="user-nav">
+            <a href="/">{{user}}</a>
+            <img id="profile-picture" src="{{photo}}">
+        </li>
+        {{else}}
+        <li>
+            <a id="login" href="/auth/google">
+                FAZER LOGIN COM O GOOGLE            
+            </a>
+            
+        </li>
+        {{/if}}
+    
     </ul>
 </nav>
