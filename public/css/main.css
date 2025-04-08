@@ -37,6 +37,7 @@ nav ul{
     list-style: none;
     display: flex;
     flex-direction: row;
+    align-items: center;
 }
 nav ul li{
     margin-right: 30px;
@@ -51,4 +52,29 @@ footer{
     width: 100%;
     text-align: center;
     color: white;
+}
+
+#login{
+    background-color: green;
+    border: 3px solid white;
+    padding: 10px;
+}
+
+#select-course{
+    padding: 10px;
+}
+
+
+ #user-nav{
+    margin-left: 65vw;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+} 
+#profile-picture{
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    margin-left: 10px;
+
 }
