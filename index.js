@@ -190,6 +190,21 @@ app.post('/converter',upload.single('gift'), async (req,res) =>{
         }
         )
         
+        const assignment = {
+            title: 'Atividade de Exemplo',
+            description: 'Esta é uma atividade criada via API',
+            workType: 'ASSIGNMENT',
+            state: 'PUBLISHED',
+            dueDate: { year: 2025, month: 11, day: 30 },
+            dueTime: { hours: 23, minutes: 59 }
+        };
+
+        const classroom = google.classroom({version:"v1", auth: oauth2Client})
+
+        classroom.courses.courseWork.create({
+            courseId:req.body.course_id,
+            requestBody: assignment
+        })
         res.send('ok')
     }catch(err)
     {
