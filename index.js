@@ -7,6 +7,8 @@ import session from 'express-session'
 import GoogleStrategy from 'passport-google-oauth20'
 import passport from 'passport'
 import { google } from 'googleapis';
+import multer from 'multer'
+import {Buffer} from 'node:buffer'
 //CONFIGURACOES
 
 dotenv.config()
@@ -14,7 +16,8 @@ const googleStrategy = GoogleStrategy.Strategy
 const app = express()
 const port = 3000
 
-//
+const storage = multer.memoryStorage()
+const upload = multer({ storage: storage})
 
 
 app.use(session({
@@ -34,6 +37,7 @@ app.use(passport.session())
 
 app.use(express.static('public'))
 
+app.use(express.urlencoded({ extended: true })); 
 
 passport.use(
     new googleStrategy(
@@ -41,7 +45,10 @@ passport.use(
             clientID: process.env.GOOGLE_CLIENT_ID,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET,
             callbackURL: 'http://localhost:3000/auth/google/callback',
-            scope:['profile', 'email', 'https://www.googleapis.com/auth/classroom.courses.readonly'],
+            scope:['profile', 
+                'email', 
+                'https://www.googleapis.com/auth/classroom.courses',
+                'https://www.googleapis.com/auth/forms.body',],
             accessType: 'offline',
             prompt:'consent'
         },
@@ -95,8 +102,9 @@ app.get('/apresentacaoplus',(req,res) =>{
 
     res.render('ApresentacaoPlus',{
         title:"Gerador de apostilas para docentes",
-        user: req.user.displayName,
-        photo:req.user.photos[0].value
+        username: req.user.displayName,
+        photo:req.user.photos[0].value,
+        user: req.user
     })
 })
 
@@ -127,8 +135,8 @@ app.get('/formqparser', async (req,res) => {
         })
 
         console.log(courses.data.courses)
-        res.render('FormQParser', {courses: courses.data.courses, user: req.user.displayName,
-            photo:req.user.photos[0].value})
+        res.render('FormQParser', {courses: courses.data.courses, username: req.user.displayName,
+            photo:req.user.photos[0].value, user : req.user})
     }catch(err)
     {
         console.log(err)
@@ -138,16 +146,56 @@ app.get('/formqparser', async (req,res) => {
 //ROTA DO TIC2DES
 app.get('/tic2des',(req,res) =>{
     res.render('Tic2Des', {
-        title:"Grupo de Pesquisa Tic2Des", user: req.user.displayName,
-        photo:req.user.photos[0].value
+        title:"Grupo de Pesquisa Tic2Des", username: req.user.displayName,
+        photo:req.user.photos[0].value,
+        user: req.user
     })
 })
 
 //ROTA DE LOGIN DO GOOGLE
-app.get('/auth/google', passport.authenticate("google", {scope: ["profile", "email","https://www.googleapis.com/auth/classroom.courses.readonly"]}))
+app.get('/auth/google', passport.authenticate("google", {scope: ["profile", "email",
+    "https://www.googleapis.com/auth/classroom.courses", 
+    "https://www.googleapis.com/auth/forms.body", 
+    "https://www.googleapis.com/auth/classroom.coursework.students"
+ ]}))
 
 app.get("/auth/google/callback", passport.authenticate("google",{failureRedirect:"/", failureMessage: true, session: true}), (req, res) => {
-    res.render('ApresentacaoPlus',{ title: "Gerador de apostilas para docentes", user : req.user.displayName, photo : req.user.photos[0].value})
+    res.render('ApresentacaoPlus',{ title: "Gerador de apostilas para docentes", username : req.user.displayName, photo : req.user.photos[0].value, user:req.user})
+})
+
+
+app.post('/converter',upload.single('gift'), async (req,res) =>{
+   
+    const gift = Buffer.from(req.file.buffer).toString()
+    console.log(gift)
+    try{
+        const oauth2Client = new google.auth.OAuth2(
+            process.env.GOOGLE_CLIENT_ID,
+            process.env.GOOGLE_CLIENT_SECRET,
+            'http://localhost:3000/auth/google/callback'
+        )
+
+        oauth2Client.setCredentials({
+            access_token: req.body.accessToken,
+            refresh_token: req.body.refreshToken
+        })
+        const form = google.forms({version: 'v1', auth: oauth2Client})
+        const id = await form.forms.create({
+            requestBody: {
+              info: {
+                title: 'Meu Formulário via Node.js',
+                documentTitle: 'Pesquisa de Satisfação'
+              }
+            }
+        }
+        )
+        
+        res.send('ok')
+    }catch(err)
+    {
+        console.log(err)
+    }
+    
 })
 
 app.listen(port, () =>
