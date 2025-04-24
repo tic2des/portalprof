@@ -3,7 +3,7 @@
         <li>
             <a href="/tic2des">TIC2DES</a>
         </li>
-        {{#if user }}
+        <%if (typeof user != 'undefined') {%>
         <li>
             <a href="/apresentacaoplus" >Apresentação Plus</a>
         </li>
@@ -12,17 +12,18 @@
         </li>
         
         <li id="user-nav">
-            <a href="/">{{username}}</a>
+            <a href="/"> <%-username-%> </a>
             <img id="profile-picture" src="{{photo}}">
         </li>
-        {{else}}
+        <%}else{%>
         <li>
             <a id="login" href="/auth/google">
                 FAZER LOGIN COM O GOOGLE            
             </a>
             
         </li>
-        {{/if}}
+        <%}%>
     
     </ul>
 </nav>
+<main>

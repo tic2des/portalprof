@@ -7,10 +7,10 @@
     <title>{{title}}</title>
 </head>
 <body>
-    {{> nav }}
+    <%- include('partials/nav.ejs') -%>
     <main>
-        {{{body}}}
+        Olá
     </main>   
-    {{> footer }}
+    <%- include('partials/footer.ejs') -%>
 </body>
 </html>

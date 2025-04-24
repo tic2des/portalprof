@@ -1,13 +1,16 @@
 body{
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
     margin: 0;
-    display: block;
-    padding: 0;
+    padding: 0 ;
     font-family: "Poppins",sans-serif;
 }
 
 
 main{
     text-align: center;
+    flex: 1;
 }
 
 a{
@@ -23,8 +26,16 @@ a:hover{
 
 input{
     margin-bottom: 20px;
+    padding: 10px;
+    border: 3px solid rgb(95, 164, 95);
+}
+textarea{
+    border: 3px solid rgb(95, 164, 95);
 }
 
+select{
+    border: 3px solid rgb(95, 164, 95);
+}
 nav{
     background-color: rgb(20, 122, 20);
     padding-bottom: 20px;
@@ -44,7 +55,6 @@ nav ul li{
 }
 
 footer{
-    position: absolute;
     bottom: 0;
     background-color: rgb(20, 122, 20);
     padding-bottom: 20px;
@@ -77,4 +87,31 @@ footer{
     height: 40px;
     margin-left: 10px;
 
+}
+
+#nome_avaliacao{
+    padding: 10px;
+}
+
+.formqparser{
+    color: white;
+    background-color: rgb(20, 122, 20);    
+    align-items: center;
+    border: 5px solid ;
+    display: flex;
+    margin: auto;
+    flex-direction: row;
+    justify-content: space-evenly;
+    width: 75%;
+}
+
+#col_1_form{
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 175px;
+}
+
+#col_2_form{
+    display: flex;
+    flex-direction: column;
 }
