@@ -1,9 +1,14 @@
-
-
-<header>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+      <%- include('partials/head.ejs') -%>
+</head>
+<body>
+    <%- include('partials/nav.ejs') -%>
+<div>
     <h1>Apresentação Plus</h1>
     <h3>Criação de apostilas para docentes</h3>
-</header>
+</div>
 
 <div class="uploadFile">
     <form enctype="multipart/form-data">   
@@ -15,6 +20,7 @@
         </button>
     </form>
 </div>
-
-
+<%- include('partials/footer.ejs') -%>
+</body>
+</html>
 

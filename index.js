@@ -1,6 +1,5 @@
 //IMPORTACOES
 
-import {engine} from 'express-handlebars'
 import express from 'express'
 import dotenv from 'dotenv'
 import session from 'express-session'
@@ -9,6 +8,7 @@ import passport from 'passport'
 import { google } from 'googleapis';
 import multer from 'multer'
 import {Buffer} from 'node:buffer'
+import flash from 'connect-flash'
 //CONFIGURACOES
 
 dotenv.config()
@@ -21,15 +21,11 @@ const upload = multer({ storage: storage})
 
 
 app.use(session({
-    cookie: {
-       maxAge: 24 * 60 * 60 * 1000,
-       secure:false
-    },
     secret:process.env.SECRET,
     resave: false,
     saveUninitialized: true
 }))
-
+app.use(flash())
 app.use(passport.initialize())
 app.use(passport.session())
 
@@ -69,10 +65,9 @@ passport.deserializeUser((user, done) => {
     done(null,user)
 })
 
-//CONFIGURACAO DO HANDLEBARS
-app.engine('handlebars', engine())
+//CONFIGURACAO DO EJS
 
-app.set('view engine', 'handlebars')
+app.set('view engine', 'ejs')
 app.set('views', './views')
 
 
@@ -90,7 +85,7 @@ function isLogged (req){
 //ROTA BASE
 
 app.get('/',(req,res) => {
-    res.render('Tic2Des')
+    res.render('Tic2Des', {title:"Portal do Professor"})
 })
 
 app.get('/apresentacaoplus',(req,res) =>{
@@ -117,6 +112,7 @@ app.get('/formqparser', async (req,res) => {
     }
 
     try{
+        const currentDate = new Date()
         const oauth2Client = new google.auth.OAuth2(
             process.env.GOOGLE_CLIENT_ID,
             process.env.GOOGLE_CLIENT_SECRET,
@@ -136,7 +132,11 @@ app.get('/formqparser', async (req,res) => {
 
         console.log(courses.data.courses)
         res.render('FormQParser', {courses: courses.data.courses, username: req.user.displayName,
-            photo:req.user.photos[0].value, user : req.user})
+            photo:req.user.photos[0].value, user : req.user, 
+            date: currentDate.toLocaleDateString("en-CA"),
+            time:currentDate.toLocaleTimeString("en-GB"),
+            messages: req.flash('error'),
+            title:"FormQParser"})
     }catch(err)
     {
         console.log(err)
@@ -165,10 +165,20 @@ app.get("/auth/google/callback", passport.authenticate("google",{failureRedirect
 
 
 app.post('/converter',upload.single('gift'), async (req,res) =>{
-   
+    
+    console.log(req.file)
     const gift = Buffer.from(req.file.buffer).toString()
     console.log(gift)
     try{
+        console.log(req.body.data_prazo)
+        const data_prazo = new Date(req.body.data_prazo)
+        const currDate = Date.now()
+
+        if(data_prazo < currDate)
+        {
+            req.flash("error","Data do prazo não pode ser no passado!")
+            res.redirect("/formqparser")
+        }
         const oauth2Client = new google.auth.OAuth2(
             process.env.GOOGLE_CLIENT_ID,
             process.env.GOOGLE_CLIENT_SECRET,
@@ -190,12 +200,13 @@ app.post('/converter',upload.single('gift'), async (req,res) =>{
         }
         )
         
+
         const assignment = {
-            title: 'Atividade de Exemplo',
-            description: 'Esta é uma atividade criada via API',
+            title: req.body.nome_avaliacao,
+            description: req.body.descricao,
             workType: 'ASSIGNMENT',
             state: 'PUBLISHED',
-            dueDate: { year: 2025, month: 11, day: 30 },
+            dueDate: { year: data_prazo.getFullYear(), month: data_prazo.getMonth()+1, day: data_prazo.getDate() },
             dueTime: { hours: 23, minutes: 59 }
         };
 
