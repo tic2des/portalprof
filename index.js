@@ -134,7 +134,6 @@ app.get('/formqparser', async (req,res) => {
         res.render('FormQParser', {courses: courses.data.courses, username: req.user.displayName,
             photo:req.user.photos[0].value, user : req.user, 
             date: currentDate.toLocaleDateString("en-CA"),
-            time:currentDate.toLocaleTimeString("en-GB"),
             messages: req.flash('error'),
             title:"FormQParser"})
     }catch(err)
@@ -165,12 +164,102 @@ app.get("/auth/google/callback", passport.authenticate("google",{failureRedirect
 
 
 app.post('/converter',upload.single('gift'), async (req,res) =>{
-    
-    console.log(req.file)
+    const REopenQuestion= new RegExp("(.+){}","gm")
+    const REtrueOrFalse = new RegExp("(.+)({F}|{V})","gm")
+    const REcorrectAnswer = new RegExp("(.*?\\?)[\\s\\S]*?\\{([\\s\\S]*?)\\}", "gm")
     const gift = Buffer.from(req.file.buffer).toString()
-    console.log(gift)
+
+    const openQuestions = gift.match(REopenQuestion)
+    const trueOrFalse = gift.match(REtrueOrFalse)
+    const correctQuestion = gift.matchAll(REcorrectAnswer)
+    
+    let multipleQuestionsList = new Array()
+
+    for(const corrQ of correctQuestion){
+        console.log(corrQ)
+        const questionText = corrQ[1].trim()
+        const optionsText = corrQ[2]
+        const options = optionsText.split('\n')
+        console.log(optionsText)
+        options.map((option)=>{
+            if(option.startsWith('=')){
+                const correct = option
+                const multipleQuestion = {
+                    title: questionText,
+                    optionsIncorrect: options.filter((o)=>o.startsWith('~')),
+                    correctOption: correct
+                }
+                multipleQuestionsList.push(multipleQuestion)
+            }
+        })
+    }
+
+    let requestForm = {info: {
+        title: 'Meu Formulário via Node.js',
+        documentTitle: 'Pesquisa de Satisfação'
+      }}
+    console.log(JSON.stringify(multipleQuestionsList))
+    let questions = []
+    var question
+    multipleQuestionsList.map((questionList) =>{
+        
+        
+        question = {
+            createItem:{
+                item:{
+                    title:questionList.title,
+                    description:"Marque a alternativa correta",
+                    questionItem:{
+                        question:{
+                            required:true,
+                            choiceQuestion:{
+                                type:'RADIO',
+                                options:[],
+                                shuffle:true
+                            }
+                            }
+            
+                        }
+                    },
+                location:{
+                    index:0
+                }
+            }
+        }
+
+        questionList.optionsIncorrect.map((option) =>{
+            question.createItem.item.questionItem.question.choiceQuestion.options.push(option.slice(1, option.length-3))
+        })
+        question.createItem.item.questionItem.question.choiceQuestion.options.push(questionList.correctOption)
+        questions.push(question)
+    })
+
+    openQuestions.map((q) => {
+        question = {
+        createItem:{
+            item:{
+                title:q.slice(0, q.length - 2),
+                description:"Disserte sobre",
+                questionItem:{
+                    question:{
+                        required:true,
+                        textQuestion:{
+                            paragraph:false
+                            }
+                        }
+        
+                    }
+                },
+            location:{
+                index:0
+            }
+        }
+    }
+        questions.push(question)
+    })
+    
     try{
-        console.log(req.body.data_prazo)
+
         const data_prazo = new Date(req.body.data_prazo)
         const currDate = Date.now()
 
@@ -190,15 +279,28 @@ app.post('/converter',upload.single('gift'), async (req,res) =>{
             refresh_token: req.body.refreshToken
         })
         const form = google.forms({version: 'v1', auth: oauth2Client})
-        const id = await form.forms.create({
+        const formWork = await form.forms.create({ 
             requestBody: {
-              info: {
-                title: 'Meu Formulário via Node.js',
-                documentTitle: 'Pesquisa de Satisfação'
-              }
+                info: {
+                    title: 'Meu Formulário via Node.js',
+                    documentTitle: 'Pesquisa de Satisfação'
+                  }
+                }
+                
+            }     
+        )
+        console.log("QUESTOES")
+        console.log(JSON.stringify(questions))
+
+        const addQuestions = await form.forms.batchUpdate(
+            {
+                formId:formWork.data.formId,
+                requestBody:{
+                    requests:questions
             }
         }
-        )
+    )
+        
         
 
         const assignment = {
@@ -206,17 +308,23 @@ app.post('/converter',upload.single('gift'), async (req,res) =>{
             description: req.body.descricao,
             workType: 'ASSIGNMENT',
             state: 'PUBLISHED',
+            materials:[
+            {
+                link: {
+                    url:`https://docs.google.com/form/d/${formWork.data.formId}/formview`,
+                }
+            }],
             dueDate: { year: data_prazo.getFullYear(), month: data_prazo.getMonth()+1, day: data_prazo.getDate() },
             dueTime: { hours: 23, minutes: 59 }
         };
 
         const classroom = google.classroom({version:"v1", auth: oauth2Client})
 
-        classroom.courses.courseWork.create({
+        const courseWork =  await classroom.courses.courseWork.create({
             courseId:req.body.course_id,
             requestBody: assignment
         })
-        res.send('ok')
+        res.redirect(courseWork.data.alternateLink)
     }catch(err)
     {
         console.log(err)
