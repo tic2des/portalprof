@@ -164,21 +164,19 @@ app.get("/auth/google/callback", passport.authenticate("google",{failureRedirect
 
 
 app.post('/converter',upload.single('gift'), async (req,res) =>{
-    const REopenQuestion= new RegExp("(.+){}","gm")
-    const REtrueOrFalse = new RegExp("(.+)({F}|{V})","gm")
-    const REcorrectAnswer = new RegExp("(.*?\\?)[\\s\\S]*?\\{([\\s\\S]*?)\\}", "gm")
     const gift = Buffer.from(req.file.buffer).toString()
 
-    const openQuestions = gift.match(REopenQuestion)
-    const trueOrFalse = gift.match(REtrueOrFalse)
-    const correctQuestion = gift.matchAll(REcorrectAnswer)
+    const openQuestions = gift.match(/^::(.*?)::(.+?)\s*\{\s*\}/gims)
+   // const trueOrFalse = gift.match(REtrueOrFalse)
+    const correctQuestion = gift.matchAll(/^::(.*?)::(.+?)\s*\{\s*([\s\S]*?)\s*\}/gm)
     
     let multipleQuestionsList = new Array()
-
-    for(const corrQ of correctQuestion){
+    if(correctQuestion != undefined)
+    {
+           for(const corrQ of correctQuestion){
         console.log(corrQ)
-        const questionText = corrQ[1].trim()
-        const optionsText = corrQ[2]
+        const questionText = corrQ[2].trim()
+        const optionsText = corrQ[3]
         const options = optionsText.split('\n')
         console.log(optionsText)
         options.map((option)=>{
@@ -186,13 +184,15 @@ app.post('/converter',upload.single('gift'), async (req,res) =>{
                 const correct = option
                 const multipleQuestion = {
                     title: questionText,
-                    optionsIncorrect: options.filter((o)=>o.startsWith('~')),
+                    optionsIncorrect: options.filter((o)=>o.trim().startsWith('~')),
                     correctOption: correct
                 }
                 multipleQuestionsList.push(multipleQuestion)
             }
         })
     }
+    }
+ 
 
     let requestForm = {info: {
         title: 'Meu Formulário via Node.js',
@@ -201,6 +201,7 @@ app.post('/converter',upload.single('gift'), async (req,res) =>{
     console.log(JSON.stringify(multipleQuestionsList))
     let questions = []
     var question
+
     multipleQuestionsList.map((questionList) =>{
         
         
@@ -228,13 +229,14 @@ app.post('/converter',upload.single('gift'), async (req,res) =>{
         }
 
         questionList.optionsIncorrect.map((option) =>{
-            question.createItem.item.questionItem.question.choiceQuestion.options.push(option.slice(1, option.length-3))
+            question.createItem.item.questionItem.question.choiceQuestion.options.push({value: option.trim().slice(1)})
         })
-        question.createItem.item.questionItem.question.choiceQuestion.options.push(questionList.correctOption)
+        question.createItem.item.questionItem.question.choiceQuestion.options.push({value:questionList.correctOption.trim().slice(1)})
         questions.push(question)
     })
-
-    openQuestions.map((q) => {
+    if(openQuestions != undefined)
+    {
+        openQuestions.map((q) => {
         question = {
         createItem:{
             item:{
@@ -257,6 +259,8 @@ app.post('/converter',upload.single('gift'), async (req,res) =>{
     }
         questions.push(question)
     })
+    }
+    
     
     try{
 
@@ -282,15 +286,13 @@ app.post('/converter',upload.single('gift'), async (req,res) =>{
         const formWork = await form.forms.create({ 
             requestBody: {
                 info: {
-                    title: 'Meu Formulário via Node.js',
-                    documentTitle: 'Pesquisa de Satisfação'
+                    title: req.body.nome_avaliacao,
+                    documentTitle: req.body.nome_avaliacao
                   }
                 }
                 
             }     
         )
-        console.log("QUESTOES")
-        console.log(JSON.stringify(questions))
 
         const addQuestions = await form.forms.batchUpdate(
             {
