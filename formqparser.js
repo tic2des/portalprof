@@ -1,4 +1,4 @@
-import {forms_v1, google, oauth2_v2} from 'googleapis'
+import {forms_v1, google} from 'googleapis'
 /**
  * 
  * @param {OAuth2Client} authClient - oauthClient
@@ -250,4 +250,48 @@ export async function createAssignment(name, description, formId, dateEnd, oAuth
     
     console.log("Redirecionando para a atividade")
     return courseWork.data.alternateLink
+}
+
+export function prepTrueOrFalseQuest(questionsList, trueOrFalseList){
+    if(trueOrFalseList != undefined){
+        var question
+        for(var q of trueOrFalseList){
+            question = {
+                createItem:{
+                    item:{
+                        title:q[1],
+                        description:"Marque V ou F",
+                        questionItem:{
+                            question:{
+                                required:true,
+                                grading:{
+                                    pointValue: 2,
+                                    correctAnswers:{
+                                        answers: [
+                                            {
+                                                value:q[2]
+                                            }
+                                        ]
+                                    }
+                                },
+                                choiceQuestion:{
+                                    type:'RADIO',
+                                    options:[
+                                        {value: "Verdadeiro"},
+                                        {value: "Falso"}
+                                    ],
+                                    shuffle:true
+                                }
+                                }
+                
+                            }
+                        },
+                    location:{
+                        index:0
+                    }
+                } 
+            }
+            questionsList.push(question)
+        }
+    }
 }

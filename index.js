@@ -10,7 +10,8 @@ import {Buffer} from 'node:buffer'
 import flash from 'connect-flash'
 import { prepareLogin, preparePassport, isLogged, loginOAuth, } from './login.js';
 import { createAssignment, createForm, addQuestionsForms, getCourses, 
-    getMultipleQuestions, prepMultipleQuestion, prepOpenQuestions, validDate } from './formqparser.js'
+    getMultipleQuestions, prepMultipleQuestion, prepOpenQuestions, validDate, 
+    prepTrueOrFalseQuest} from './formqparser.js'
 //CONFIGURACOES
 
 dotenv.config()
@@ -117,28 +118,26 @@ app.get("/auth/google/callback", login.authenticate("google",{failureRedirect:"/
 app.post('/converter',upload.single('gift'), async (req,res) =>{
     if(isLogged(req))
     {   
-        console.log(req.file)
         const nome_avaliacao = req.body.nome_avaliacao
-        const data_prazo = req.body.data_prazo
-        console.log(req.user)
         const gift = Buffer.from(req.file.buffer).toString()
 
         const openQuestions = gift.match(/^::(.*?)::(.+?)\s*\{\s*\s*}/gm)
+        const tOrFQuestionsMatch = gift.matchAll(/::Q\d:: (.*){(Falso|Verdadeiro)}/gm)
         
         const multipleQuestionMatch = gift.matchAll(/^::(.*?)::(.+?)\s*\{\s*([\s\S]*?)\s*\}/gm)
-        
         const multipleQuestion = getMultipleQuestions(multipleQuestionMatch)
 
         let questions = new Array()
 
-        prepMultipleQuestion(questions, multipleQuestion)
-        
+        prepMultipleQuestion(questions, multipleQuestion)  
         prepOpenQuestions(questions, openQuestions)
-        
+        prepTrueOrFalseQuest(questions, tOrFQuestionsMatch)
+
+
         
         try{
 
-            const dateEnd = new Date(data_prazo)
+            const dateEnd = new Date(req.body.data_prazo)
             
 
             if(!validDate(dateEnd))
