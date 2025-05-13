@@ -27,8 +27,13 @@ const upload = multer({ storage: storage})
 app.use(session({
     secret:process.env.SECRET,
     resave: false,
-    saveUninitialized: true
+    saveUninitialized: true,
+    cookie:{
+        secure: false,
+        maxAge: 24*60*60*1000
+    }
 }))
+
 app.use(flash())
 
 preparePassport(app)
@@ -52,7 +57,7 @@ app.set('views', './views')
 //ROTA BASE
 
 app.get('/',(req,res) => {
-    res.render('Tic2Des', {title:"Portal do Professor"})
+    res.render('Tic2Des', {title:"Portal do Professor", user: req.user})
 })
 
 app.get('/apresentacaoplus',(req,res) =>{
