@@ -57,7 +57,27 @@ app.set('views', './views')
 //ROTA BASE
 
 app.get('/',(req,res) => {
-    res.render('Tic2Des', {title:"Portal do Professor", user: req.user})
+    if(isLogged(req)){
+        res.render('Tic2Des', {title:"Portal do Professor", user: req.user})
+    }else
+    {
+        res.render('Tic2Des', {title: 'Portal do Professor'})
+    }
+})
+
+
+app.get('/profile',(req,res) => {
+    res.render('Perfil',{title: 'Perfil do Usuário',user: req.user})
+})
+
+app.post('/logout',(req,res) => {
+
+  req.session.destroy((err) => {
+    if (err) {
+      return res.status(500).send('Erro ao fazer logout');
+    }
+    res.redirect('/'); 
+  })
 })
 
 app.get('/apresentacaoplus',(req,res) =>{

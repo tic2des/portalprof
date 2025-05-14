@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+      <%- include('partials/head.ejs') -%>
+</head>
+    <%- include('partials/nav.ejs') -%>
+    <div class="profile">
+
+        <img height="100px" width="100px" class="profile-img" src="<%-user.photo-%>">
+        <p><%-user.displayName-%></p>
+        <form method="POST" action="/logout">
+            <input type="submit" value="Sair">
+        </form>
+
+    </div>
+    <%- include('partials/footer.ejs') -%>
+</body>
+</html>
