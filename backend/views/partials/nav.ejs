@@ -1,27 +1,25 @@
 <nav>
-    <ul>
-        <li>
-            <a href="/tic2des">TIC2DES</a>
-        </li>
-        <%if (typeof user != 'undefined') {%>
-        <li>
-            <a href="/apresentacaoplus" >Apresentação Plus</a>
-        </li>
-        <li>
-            <a href="/formqparser">Form QParser</a>
-        </li>
-        
-        <li id="user-nav">
-            <a href="/profile" > <%-user.displayName-%> </a>
-            <img id="profile-picture" src="<%-user.photo-%>">
-        </li>
+    
+        <h3 class="align-nav" id="portal-professor">Portal do Professor</h3>
+        <%if (typeof photo != 'undefined') {%>
+        <ul>
+            <li>
+                <a href="/apresentacaoplus" >Apresentação Plus</a>
+            </li>
+            <li>
+                <a href="/formqparser">Form QParser</a>
+            </li>
+            <li>
+                <a href="/tic2des">TIC2DES</a>
+            </li>
+            <li id="user-nav">
+                <a href="/profile"> <img id="profile-picture" src="<%-photo-%>"> </a>
+            </li>
+        </ul>
         <%}else{%>
-        <li>
-            <a id="login" href="api/auth/google">
-                FAZER LOGIN COM O GOOGLE            
+            <a class="btn align-nav"  id="login" href="api/auth/google">
+                Entre com Google            
             </a>
-            
-        </li>
         <%}%>
     
     </ul>
