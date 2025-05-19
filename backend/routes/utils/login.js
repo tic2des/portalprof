@@ -1,7 +1,9 @@
 import GoogleStrategy from 'passport-google-oauth20'
 import passport from 'passport'
 import {google} from 'googleapis'
+import jwt from 'jsonwebtoken'
 
+const {sign, verify} = jwt
 /**
  * 
  * @param {Express} app - O objeto do express 
@@ -14,7 +16,7 @@ export function preparePassport(app){
  * @param {str} googleClientId - O google client ID.
  * @param {str} googleClientSecret - O secret do google client.
  */
-export function prepareLogin(googleClientId, googleClientSecret){
+export function prepareLogin(googleClientId, googleClientSecret, secret){
     const googleStrategy = GoogleStrategy.Strategy
 
     passport.use(
@@ -32,8 +34,8 @@ export function prepareLogin(googleClientId, googleClientSecret){
             },
             async (accessToken, refreshToken, profile, done) => {
                 const userData = {
-                    accessToken,
-                    refreshToken,
+                    token: sign({access_token:accessToken,
+                        refresh_token: refreshToken},secret),
                     id:profile.id,
                     displayName: profile.displayName,
                     email: profile.emails[0].value,
@@ -44,6 +46,7 @@ export function prepareLogin(googleClientId, googleClientSecret){
             }
         )
     )
+    
 
     passport.serializeUser((user,done) =>{
         done(null,{
@@ -51,8 +54,7 @@ export function prepareLogin(googleClientId, googleClientSecret){
             displayName: user.displayName,
             email: user.email,
             photo: user.photo,
-            accessToken: user.accessToken,
-            refreshToken: user.refreshToken
+            token: user.token
         })
     })
 
@@ -63,19 +65,7 @@ export function prepareLogin(googleClientId, googleClientSecret){
     return passport
 }
  
-/** 
-  *  @param req - Request
-**/
-export function isLogged (req){
-    if (!req.isAuthenticated() || !req.user)
-    {
-        return false
-    }
-    else
-    {
-        return true
-    }
-}
+
 
 /**
  * 
