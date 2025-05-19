@@ -4,10 +4,14 @@ body{
     flex-direction: column;
     margin: 0;
     padding: 0 ;
-    font-family: "Poppins",sans-serif;
+    font-family: "Inter", sans-serif;
 }
 
-
+hr{
+    border: 5px solid black;
+    width:50vw;
+    margin: 0 auto;
+}
 main{
     text-align: center;
     flex: 1;
@@ -32,6 +36,7 @@ input{
     padding: 10px;
     border: 3px solid rgb(95, 164, 95);
 }
+
 textarea{
     border: 3px solid rgb(95, 164, 95);
 }
@@ -44,7 +49,6 @@ nav{
     padding-bottom: 20px;
     padding-top: 20px;
     width: 100%;
-    
 }
 
 nav ul{
@@ -67,10 +71,11 @@ footer{
     color: white;
 }
 
+
 #login{
-    background-color: green;
-    border: 3px solid white;
-    padding: 10px;
+    float: right;
+    margin-right: 30px;
+    margin-top: 0;
 }
 
 #select-course{
@@ -84,11 +89,15 @@ footer{
     flex-direction: row;
     align-items: center;
 } 
+
 #profile-picture{
+    display: flex;
     border-radius: 50%;
     width: 40px;
     height: 40px;
     margin-left: 10px;
+    justify-content: flex-end;
+    cursor: pointer;
 
 }
 
@@ -122,20 +131,42 @@ footer{
 }
 
 .profile{
-
-
-    background-color: rgb(20, 122, 20); 
     display: flex;
-    flex-direction: column;
-    text-align: center;
-    align-items: center;
+    flex-direction: column;  
+    justify-content: center;
     margin: 0 auto;
-    margin-top: 25px;
-    width: 25%;
-    height: 50vh;
+    margin-top: 10vw;
+    
 }
 
 .profile-img{
-    margin-top: 40px;
+    display: flex;
+    margin: 0 auto;
     border-radius: 50%;
+}
+
+.btn{
+    font-size: 16px;
+    margin-top: 20px;
+    border: none;
+    background-color: #212121;
+    color: white;
+    padding: 25px 50px 25px 50px;
+    cursor: pointer;
+}
+
+.btn:hover{
+    background-color:#414141;
+}
+
+
+
+#username{
+    color: black;
+}
+
+#portal-professor{
+    color: white;
+    float: left;
+    margin-left: 30px;
 }

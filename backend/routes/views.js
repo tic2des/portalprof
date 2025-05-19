@@ -17,13 +17,9 @@ router.get('/', (req,res) => {
 })
 
 
-router.get('/profile', (req, res) => {
-    if(isLogged(req))
-    {
-        res.render('Perfil', {title: 'Perfil do Usuário', user: req.user})
-    }else{
-        res.send('<h1>Acesso não autorizado<h1>')
-    }
+router.get('/profile', isLogged ,(req, res) => {
+        console.log(req.displayName)
+        res.render('Perfil', {title: 'Perfil do Usuário', photo:req.photo, displayName: req.displayName})
     
 })
 
@@ -37,8 +33,8 @@ router.get('/apresentacaoplus', isLogged, (req, res) => {
 
 router.get('/formqparser', isLogged, async (req, res) => {
     let courses = null
+    console.log(req.user)
     try{
-        console.log(req.user)
         courses = await axios(
             {   
                 headers:{
@@ -58,7 +54,7 @@ router.get('/formqparser', isLogged, async (req, res) => {
 
     const currentDate = new Date() 
     try{
-        res.render('FormQParser',{title:"FormQParser",courses:courses.data.courses, date: currentDate.toLocaleDateString("en-CA")})
+        res.render('FormQParser',{title:"FormQParser", photo: req.photo, courses:courses.data.courses, date: currentDate.toLocaleDateString("en-CA")})
     }catch(err){
         console.log(err)
     }

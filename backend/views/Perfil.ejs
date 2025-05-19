@@ -6,10 +6,11 @@
     <%- include('partials/nav.ejs') -%>
     <div class="profile">
 
-        <img height="100px" width="100px" class="profile-img" src="<%-user.photo-%>">
-        <p><%-user.displayName-%></p>
+        <img height="100px" width="100px" class="profile-img" src="<%-photo-%>">
+        <h3 id="username" > <%-displayName-%> </h3>
+        <hr>
         <form method="POST" action="/logout">
-            <input type="submit" value="Sair">
+            <input class="btn" type="submit" value="Sair">
         </form>
 
     </div>
