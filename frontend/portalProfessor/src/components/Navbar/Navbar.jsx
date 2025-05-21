@@ -8,18 +8,20 @@ function Navbar(props)
         return(
             <nav>
 
-                <h3 className={styles.portalProfessor}>Portal do Professor</h3>
+                <h3 className={styles.portalProfessor}>
+                    <Link href="/" value="Portal do Professor"/>
+                </h3>
                     
                 <ul>
                     
                     <li>
-                        <Link href="#" value="Apresentação Plus"/>
+                        <Link href="/apresentacaoplus" value="Apresentação Plus"/>
                     </li>
                     <li>
-                        <Link href="#" value="FormQParser"/>
+                        <Link href="/formqparser" value="FormQParser"/>
                     </li>
                     <li>
-                        <Link href="#" value="Tic2Des"/>
+                        <Link href="/tic2des" value="Tic2Des"/>
                     </li>
                     
                 </ul>

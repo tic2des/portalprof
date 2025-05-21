@@ -1,7 +1,7 @@
-
+import { NavLink } from "react-router"
 
 function Link(props){
-    return <a href={props.href}>{props.value}</a>
+    return <NavLink to={props.href}>{props.value}</NavLink>
 }
 
 export default Link

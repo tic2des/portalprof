@@ -1,8 +1,11 @@
-import Navbar from "../components/Navbar/Navbar";
+import File from "../components/File/File"
 
-function PortalProfessor(props){
+function PortalProfessor(){
     return(
-        <Navbar isLogged="true" />
+        <>
+            <h1>Portal do Professor</h1>
+            <p>Pagina em construcao</p>
+        </>
     )
 }
 

@@ -4,7 +4,6 @@ body{
   margin: 0;
   padding: 0 ;
   font-family: "Inter", sans-serif;
-  color: white;
 }
 
 hr{
@@ -26,6 +25,10 @@ a:hover{
   color: gray;
   cursor: pointer;
   transition: 0.5s;
+}
+
+a.active{
+  color: gray;
 }
 
 
@@ -65,6 +68,20 @@ nav ul li{
 h3{
   float: left;
   margin-left: 30px;
+}
+
+::file-selector-button{
+  font-size: 16px;
+  margin-top: 20px;
+  border: none;
+  background-color: #212121;
+  color: white;
+  padding: 25px 50px 25px 50px;
+  cursor: pointer;
+}
+
+::file-selector-button:hover{
+  background-color:#414141;
 }
 
 footer{
