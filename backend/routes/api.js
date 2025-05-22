@@ -12,12 +12,13 @@ const upload = multer({ storage: storage})
 
 const login = prepareLogin(process.env.GOOGLE_CLIENT_ID, process.env.GOOGLE_CLIENT_SECRET, process.env.SECRET)
 
-
+//Rota base
 router.get('/', (req, res) => {
     res.json({user: req.user})
 })
 
 
+//Rota de login com google
 router.get('/auth/google', login.authenticate("google", {
     scope: [
         "profile", 
@@ -29,6 +30,7 @@ router.get('/auth/google', login.authenticate("google", {
 }))
 
 
+//Rota do FOrmQParser
 router.get('/formqparser', verifyToken, async (req,res)=>{
     try {
       
@@ -50,6 +52,8 @@ router.get('/formqparser', verifyToken, async (req,res)=>{
         
 })
 
+
+//Rota de Logout
 router.post('/logout', isLogged, (req, res) => {
     req.session.destroy((err) => {
         if (err) {
@@ -59,6 +63,8 @@ router.post('/logout', isLogged, (req, res) => {
     })
 })
 
+
+//Rota que que converte e cria o formulario
 router.post('/converter', verifyToken, upload.single('gift'), async (req, res) => {
     if(isLogged(req)) {   
         const nome_avaliacao = req.body.nome_avaliacao
