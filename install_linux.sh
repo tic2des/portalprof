@@ -21,18 +21,21 @@ if command -v node &> /dev/null; then
 else
 	while read -p "Node.js não instalado, deseja instalar?(S/N)" entrada
 	do
-		if ["$entrada"] = "S"; then
+		if [ "$entrada" = "S" ]; then
 			echo "Instalando Node.js..."
 		    apt  install nodejs
 			echo "Instalando depedências"
 			npm install
 
 			break
-		elif ["$entrada"] = "N"; then
+		elif [ "$entrada" = "N" ]; then
 			echo "Não foi possível instalar o projeto pois Node.js não está instalado"
+			break
+		else
+			echo "Opcao invalida"
 			break
 		fi		
 	done
 fi
 
-
+echo "Projeto instalado"
