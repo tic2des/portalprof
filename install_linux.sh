@@ -23,6 +23,10 @@ else
 	do
 		if ["$entrada"] = "S"; then
 			echo "Instalando Node.js..."
+		    apt  install nodejs
+			echo "Instalando depedências"
+			npm install
+
 			break
 		elif ["$entrada"] = "N"; then
 			echo "Não foi possível instalar o projeto pois Node.js não está instalado"
