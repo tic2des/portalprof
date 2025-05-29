@@ -5,10 +5,15 @@ import { createAssignment, createForm, addQuestionsForms, getMultipleQuestions,
     prepMultipleQuestion, prepOpenQuestions, validDate, prepTrueOrFalseQuest,getCourses } from './utils/formqparser.js'
 import multer from 'multer'
 import { verifyToken, isLogged} from './middleware/auth.js'
+import { extractPptx } from './utils/apresentacaoplus.js'
+import {mkdir,mkdirSync} from 'node:fs'
+
 dotenv.config()
 const router = express.Router()
 const storage = multer.memoryStorage()
 const upload = multer({ storage: storage})
+
+const uploadPptx = multer({dest: "uploads/"})
 
 const login = prepareLogin(process.env.GOOGLE_CLIENT_ID, process.env.GOOGLE_CLIENT_SECRET, process.env.SECRET)
 
@@ -116,4 +121,13 @@ router.post('/converter', verifyToken, upload.single('gift'), async (req, res) =
     }
 })
 
+
+router.post('/gerarapostila/:user', isLogged, uploadPptx.single('pptx'), (req, res) =>{
+    try{
+        extractPptx("uploads/"+req.file.filename,"uploads/")
+        console.log("Arquivo extraído!");
+    }catch(e){
+        console.log(e)
+    }
+})
 export default router

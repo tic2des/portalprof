@@ -19,15 +19,18 @@ router.get('/', (req,res) => {
 
 router.get('/profile', isLogged ,(req, res) => {
         console.log(req.displayName)
-        res.render('Perfil', {title: 'Perfil do Usuário', photo:req.photo, displayName: req.displayName})
+        res.render('Perfil', {title: 'Perfil do Usuário', photo:req.photo, 
+            displayName: req.displayName})
     
 })
 
 router.get('/apresentacaoplus', isLogged, (req, res) => {
 
     res.render('ApresentacaoPlus', {
-        title: "Gerador de apostilas para docentes",
-        user: req.user
+        title: "Gerador de apostilas para docentes", 
+        photo: req.photo,
+        displayName: req.displayName,
+        email: req.email
     })
 })
 

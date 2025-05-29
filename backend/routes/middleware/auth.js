@@ -8,6 +8,7 @@ export const isLogged = (req, res, next)=>{
 
         req.photo = req.user.photo
         req.displayName = req.user.displayName
+        req.email = req.user.email
         return next()
 
     }

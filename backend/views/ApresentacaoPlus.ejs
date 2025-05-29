@@ -11,9 +11,9 @@
 </div>
 
 <div class="uploadFile">
-    <form enctype="multipart/form-data">   
+    <form enctype="multipart/form-data" method="POST" action="http://localhost:3000/api/gerarapostila/<%-email.replace(/@.*/,'')-%>">   
         <p>Envie o arquivo para fazer apostila</p>
-        <input id="pptx" type="file" name="presentation">
+        <input id="pptx" type="file" name="pptx">
         <p></p>
         <input id="send" type="submit" name="submit" value="Gerar apostila" class="btn">
     </form>
