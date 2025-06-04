@@ -1,0 +1,29 @@
+<nav>
+    <ul>
+        <li>
+            <a href="/tic2des">TIC2DES</a>
+        </li>
+        <%if (typeof user != 'undefined') {%>
+        <li>
+            <a href="/apresentacaoplus" >Apresentação Plus</a>
+        </li>
+        <li>
+            <a href="/formqparser">Form QParser</a>
+        </li>
+        
+        <li id="user-nav">
+            <a href="/profile" > <%-user.displayName-%> </a>
+            <img id="profile-picture" src="<%-user.photo-%>">
+        </li>
+        <%}else{%>
+        <li>
+            <a id="login" href="/auth/google">
+                FAZER LOGIN COM O GOOGLE            
+            </a>
+            
+        </li>
+        <%}%>
+    
+    </ul>
+</nav>
+<main>
